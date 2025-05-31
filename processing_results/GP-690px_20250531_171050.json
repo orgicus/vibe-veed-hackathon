@@ -1,0 +1,11 @@
+{
+  "image_name": "GP-690px",
+  "timestamp": "2025-05-31T17:10:42.780179",
+  "cloudinary_url": "https://res.cloudinary.com/dm3afonm1/image/upload/v1748707843/uploaded_images/ml01nip3ir1qnx72shqw.jpg",
+  "background_removed_url": null,
+  "effects_video_url": null,
+  "audio_url": null,
+  "final_video_url": null,
+  "status": "failed",
+  "error": "Failed to remove background"
+}

@@ -79,6 +79,7 @@ def remove_background(image_url):
                 print(log["message"])
 
     try:
+        print(f"Calling fal.ai API with image URL: {image_url}")
         result = fal_client.subscribe(
             "fal-ai/bria/background/remove",
             arguments={
@@ -87,7 +88,12 @@ def remove_background(image_url):
             with_logs=True,
             on_queue_update=on_queue_update,
         )
-        return result
+        print(f"Fal.ai API response: {result}")
+        if result and isinstance(result, dict) and 'image' in result and 'url' in result['image']:
+            return {'url': result['image']['url']}
+        else:
+            print(f"Unexpected response format from fal.ai: {result}")
+            return None
     except Exception as e:
         print(f"Error removing background: {str(e)}")
         return None
@@ -179,7 +185,8 @@ def process_image(image_path, effects_prompt=None, audio_prompt=None):
 
 if __name__ == "__main__":
     # Process all images in the assets folder
-    assets_dir = Path("assets")
+    script_dir = Path(__file__).parent
+    assets_dir = script_dir / "assets"
     if not assets_dir.exists():
         print(f"Assets directory not found at {assets_dir}")
         exit(1)

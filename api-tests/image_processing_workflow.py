@@ -5,6 +5,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 import fal_client
 import time
+import requests
 
 # Load environment variables
 load_dotenv()
@@ -54,6 +55,32 @@ def remove_background(image_url):
         print(f"Error removing background: {str(e)}")
         return None
 
+def save_processed_image(image_url, original_filename):
+    """
+    Save the processed image to the processed_images folder
+    """
+    try:
+        # Create processed_images directory if it doesn't exist
+        processed_dir = Path("processed_images")
+        processed_dir.mkdir(exist_ok=True)
+        
+        # Generate new filename
+        filename = f"processed_{original_filename}"
+        output_path = processed_dir / filename
+        
+        # Download and save the image
+        response = requests.get(image_url)
+        response.raise_for_status()
+        
+        with open(output_path, 'wb') as f:
+            f.write(response.content)
+            
+        print(f"Processed image saved to: {output_path}")
+        return str(output_path)
+    except Exception as e:
+        print(f"Error saving processed image: {str(e)}")
+        return None
+
 def process_image(image_path):
     """
     Main workflow: Upload to Cloudinary then remove background
@@ -87,7 +114,17 @@ def process_image(image_path):
     result = remove_background(cloudinary_url)
     if result:
         print("\nBackground removal completed!")
-        print("Result:", result)
+        
+        # Step 3: Save the processed image
+        if 'image' in result:
+            saved_path = save_processed_image(
+                result['image'],
+                Path(image_path).name
+            )
+            if saved_path:
+                print(f"Final processed image saved at: {saved_path}")
+        else:
+            print("No processed image found in result")
     else:
         print("Failed to remove background")
 
